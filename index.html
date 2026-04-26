@@ -130,7 +130,7 @@
   }
   .accounts .row {
     display: grid;
-    grid-template-columns: 1.4fr 1fr auto;
+    grid-template-columns: 1.5fr auto 1fr auto;
     gap: 8px;
     align-items: center;
     padding: 10px 12px;
@@ -176,7 +176,10 @@
   @media (max-width: 540px) {
     header h1 { font-size: 26px; }
     section { padding: 22px 18px; }
-    .accounts .row { grid-template-columns: 1fr; }
+    .accounts .row {
+      grid-template-columns: 1fr auto;
+    }
+    .accounts .row.head { display: none; }
   }
 </style>
 </head>
@@ -218,26 +221,30 @@
     <div class="accounts" id="accounts">
       <div class="row head">
         <div>계정</div>
+        <div></div>
         <div>비밀번호</div>
         <div></div>
       </div>
       <div class="row">
         <code>yipa0301@goe.go.kr</code>
+        <button class="copy-btn" data-copy="yipa0301@goe.go.kr">복사</button>
         <code>qordka1320^^</code>
-        <button class="copy-btn" data-id="yipa0301@goe.go.kr / qordka1320^^">복사</button>
+        <button class="copy-btn" data-copy="qordka1320^^">복사</button>
       </div>
       <div class="row">
         <code>yipa0302@goe.go.kr</code>
+        <button class="copy-btn" data-copy="yipa0302@goe.go.kr">복사</button>
         <code>qordka1320^^</code>
-        <button class="copy-btn" data-id="yipa0302@goe.go.kr / qordka1320^^">복사</button>
+        <button class="copy-btn" data-copy="qordka1320^^">복사</button>
       </div>
       <div class="row">
         <code>yipa0303@goe.go.kr</code>
+        <button class="copy-btn" data-copy="yipa0303@goe.go.kr">복사</button>
         <code>qordka1320*</code>
-        <button class="copy-btn" data-id="yipa0303@goe.go.kr / qordka1320*">복사</button>
+        <button class="copy-btn" data-copy="qordka1320*">복사</button>
       </div>
     </div>
-    <p class="muted">계정/비번을 클릭하면 자동 선택됩니다. 옆 “복사” 버튼을 누르면 한 번에 복사돼요.</p>
+    <p class="muted">계정과 비밀번호를 각각 “복사” 버튼으로 따로 복사할 수 있어요.</p>
   </section>
 
   <!-- 4. 데스크톱 활용 -->
@@ -288,7 +295,7 @@
 <script>
   document.querySelectorAll('.copy-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
-      var text = btn.getAttribute('data-id');
+      var text = btn.getAttribute('data-copy');
       navigator.clipboard.writeText(text).then(function () {
         var orig = btn.textContent;
         btn.textContent = '복사됨';
