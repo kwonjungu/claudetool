@@ -1,4 +1,6 @@
 스크린샷*.png
 *.csv
+*.hwpx
+_hwpx_extract/
 .DS_Store
 Thumbs.db

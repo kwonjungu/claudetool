@@ -167,6 +167,89 @@
   .copy-btn:hover { background: var(--accent-soft); border-color: var(--accent); }
   .copy-btn.copied { background: var(--accent); color: #fff; border-color: var(--accent); }
 
+  /* 이름 검색 */
+  .search-wrap {
+    margin: 8px 0 4px;
+    position: relative;
+  }
+  .search-input {
+    width: 100%;
+    padding: 13px 14px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    font-size: 15px;
+    font-family: inherit;
+    background: #fff;
+    color: var(--ink);
+    outline: none;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .search-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+  .search-result {
+    margin-top: 12px;
+    padding: 16px 18px;
+    background: var(--accent-soft);
+    border: 1px solid #f3d3bd;
+    border-radius: 12px;
+    display: none;
+  }
+  .search-result.show { display: block; }
+  .search-result.empty {
+    background: #faf3ec;
+    border-color: var(--line);
+    color: var(--muted);
+  }
+  .search-result .who {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .search-result .who b { color: var(--accent); }
+  .search-result .creds {
+    display: grid;
+    grid-template-columns: 1.5fr auto 1fr auto;
+    gap: 8px;
+    align-items: center;
+    margin-top: 8px;
+  }
+  .search-result .creds code {
+    background: #fff;
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    user-select: all;
+    word-break: break-all;
+    border: 1px solid #f3d3bd;
+  }
+  .suggestions {
+    list-style: none;
+    margin: 6px 0 0;
+    padding: 0;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+    display: none;
+  }
+  .suggestions.show { display: block; }
+  .suggestions li {
+    padding: 9px 12px;
+    cursor: pointer;
+    font-size: 14px;
+    border-bottom: 1px solid var(--line);
+  }
+  .suggestions li:last-child { border-bottom: none; }
+  .suggestions li:hover, .suggestions li.active { background: var(--accent-soft); }
+  .suggestions li .role { color: var(--muted); font-size: 12px; margin-left: 6px; }
+  @media (max-width: 540px) {
+    .search-result .creds { grid-template-columns: 1fr auto; }
+  }
+
   footer {
     text-align: center;
     color: var(--muted);
@@ -218,27 +301,45 @@
     <h2><span class="num">3</span>구글 로그인</h2>
     <p>로그인 화면에서 <b>“Google로 계속하기”</b> 버튼을 누르고, 아래 백암초 계정 중 하나로 로그인하세요.</p>
 
+    <!-- 이름 검색 -->
+    <div class="search-wrap">
+      <input class="search-input" id="nameSearch" type="text" placeholder="🔎 내 이름을 입력해 내 계정을 찾아보세요 (예: 권준구)" autocomplete="off" />
+      <ul class="suggestions" id="suggestions"></ul>
+      <div class="search-result" id="searchResult"></div>
+    </div>
+
+    <p class="muted" style="margin-top:18px">또는 아래 표에서 직접 골라 사용하세요.</p>
+
     <div class="accounts" id="accounts">
       <div class="row head">
-        <div>계정</div>
+        <div>계정 / 사용 대상</div>
         <div></div>
         <div>비밀번호</div>
         <div></div>
       </div>
       <div class="row">
-        <code>yipa0301@goe.go.kr</code>
+        <div>
+          <code>yipa0301@goe.go.kr</code>
+          <div class="muted" style="font-size:12px;margin-top:4px">본교 교사 (담임·전담)</div>
+        </div>
         <button class="copy-btn" data-copy="yipa0301@goe.go.kr">복사</button>
         <code>qordka1320^^</code>
         <button class="copy-btn" data-copy="qordka1320^^">복사</button>
       </div>
       <div class="row">
-        <code>yipa0302@goe.go.kr</code>
+        <div>
+          <code>yipa0302@goe.go.kr</code>
+          <div class="muted" style="font-size:12px;margin-top:4px">본교 행정·돌봄·기타</div>
+        </div>
         <button class="copy-btn" data-copy="yipa0302@goe.go.kr">복사</button>
         <code>qordka1320^^</code>
         <button class="copy-btn" data-copy="qordka1320^^">복사</button>
       </div>
       <div class="row">
-        <code>yipa0303@goe.go.kr</code>
+        <div>
+          <code>yipa0303@goe.go.kr</code>
+          <div class="muted" style="font-size:12px;margin-top:4px">수정분교장</div>
+        </div>
         <button class="copy-btn" data-copy="yipa0303@goe.go.kr">복사</button>
         <code>qordka1320*</code>
         <button class="copy-btn" data-copy="qordka1320*">복사</button>
@@ -293,19 +394,154 @@
 </footer>
 
 <script>
-  document.querySelectorAll('.copy-btn').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      var text = btn.getAttribute('data-copy');
-      navigator.clipboard.writeText(text).then(function () {
-        var orig = btn.textContent;
-        btn.textContent = '복사됨';
-        btn.classList.add('copied');
-        setTimeout(function () {
-          btn.textContent = orig;
-          btn.classList.remove('copied');
-        }, 1200);
+  // 복사 버튼
+  function bindCopy(scope) {
+    (scope || document).querySelectorAll('.copy-btn').forEach(function (btn) {
+      if (btn.dataset.bound) return;
+      btn.dataset.bound = '1';
+      btn.addEventListener('click', function () {
+        var text = btn.getAttribute('data-copy');
+        navigator.clipboard.writeText(text).then(function () {
+          var orig = btn.textContent;
+          btn.textContent = '복사됨';
+          btn.classList.add('copied');
+          setTimeout(function () {
+            btn.textContent = orig;
+            btn.classList.remove('copied');
+          }, 1200);
+        });
       });
     });
+  }
+  bindCopy();
+
+  // 계정 정보
+  var ACCOUNTS = {
+    '01': { id: 'yipa0301@goe.go.kr', pw: 'qordka1320^^', label: '본교 교사 계정' },
+    '02': { id: 'yipa0302@goe.go.kr', pw: 'qordka1320^^', label: '본교 행정·돌봄 계정' },
+    '03': { id: 'yipa0303@goe.go.kr', pw: 'qordka1320*',  label: '수정분교장 계정' }
+  };
+
+  // 교직원 명단 — 출처: 2026 교직원연수 등록부(0301)
+  var STAFF = [
+    // 본교 교사 11명 → 01
+    { name: '권준구', role: '1-친절',       acct: '01' },
+    { name: '김민정', role: '2-친절',       acct: '01' },
+    { name: '이원빈', role: '3-친절',       acct: '01' },
+    { name: '이지현', role: '4-친절',       acct: '01' },
+    { name: '장재선', role: '5-친절',       acct: '01' },
+    { name: '황혜원', role: '6-친절',       acct: '01' },
+    { name: '김윤',   role: '과학전담',     acct: '01' },
+    { name: '설미선', role: '햇살반',       acct: '01' },
+    { name: '김은정', role: '유치원교사',   acct: '01' },
+    { name: '백경미', role: '영양교사',     acct: '01' },
+    { name: '강민경', role: '보건교사',     acct: '01' },
+    // 본교 행정·돌봄·기타 → 02
+    { name: '하춘식', role: '교장',         acct: '02' },
+    { name: '조성균', role: '교감',         acct: '02' },
+    { name: '강은주', role: '사서',         acct: '02' },
+    { name: '김흥석', role: '씨름 감독',    acct: '02' },
+    { name: '김종기', role: '행정실장',     acct: '02' },
+    { name: '박혜선', role: '행정계장',     acct: '02' },
+    { name: '윤광호', role: '주무관',       acct: '02' },
+    { name: '장주선', role: '주무관',       acct: '02' },
+    { name: '이미희', role: '행정실무사',   acct: '02' },
+    { name: '남희정', role: '행정실무사',   acct: '02' },
+    { name: '윤진성', role: '돌봄전담사',   acct: '02' },
+    { name: '지지영', role: '늘봄실장',     acct: '02' },
+    { name: '장동훈', role: '늘봄',         acct: '02' },
+    { name: '오현숙', role: '유치원 방과후돌봄', acct: '02' },
+    { name: '김희경', role: '조리사',       acct: '02' },
+    { name: '양지인', role: '조리실무사',   acct: '02' },
+    { name: '박현주', role: '조리실무사',   acct: '02' },
+    // 수정분교장 → 03
+    { name: '한은선', role: '1-수정',       acct: '03' },
+    { name: '이현정', role: '3,4-수정',     acct: '03' },
+    { name: '황의순', role: '6-수정',       acct: '03' },
+    { name: '정승자', role: '교과전담',     acct: '03' },
+    { name: '이선미', role: '햇살반',       acct: '03' }
+  ];
+
+  // 검색
+  var input  = document.getElementById('nameSearch');
+  var sugBox = document.getElementById('suggestions');
+  var result = document.getElementById('searchResult');
+
+  function normalize(s) { return (s || '').replace(/\s+/g, '').toLowerCase(); }
+
+  function renderResult(person) {
+    var a = ACCOUNTS[person.acct];
+    result.classList.remove('empty');
+    result.classList.add('show');
+    result.innerHTML =
+      '<div class="who"><b>' + person.name + '</b> 선생님 (' + person.role + ')은 ' +
+      '<b>' + a.label + '</b>을 사용합니다.</div>' +
+      '<div class="creds">' +
+        '<code>' + a.id + '</code>' +
+        '<button class="copy-btn" data-copy="' + a.id + '">복사</button>' +
+        '<code>' + a.pw + '</code>' +
+        '<button class="copy-btn" data-copy="' + a.pw + '">복사</button>' +
+      '</div>';
+    bindCopy(result);
+  }
+
+  function renderEmpty(q) {
+    result.classList.add('show', 'empty');
+    result.innerHTML = '“' + q + '” 이름을 찾을 수 없어요. 행정실에 문의해 주세요.';
+  }
+
+  function clearResult() {
+    result.classList.remove('show', 'empty');
+    result.innerHTML = '';
+  }
+
+  function showSuggestions(q) {
+    var nq = normalize(q);
+    if (!nq) { sugBox.classList.remove('show'); sugBox.innerHTML = ''; return; }
+    var matches = STAFF.filter(function (p) {
+      return normalize(p.name).indexOf(nq) !== -1 || normalize(p.role).indexOf(nq) !== -1;
+    }).slice(0, 8);
+    if (!matches.length) { sugBox.classList.remove('show'); sugBox.innerHTML = ''; return; }
+    sugBox.innerHTML = matches.map(function (p) {
+      return '<li data-name="' + p.name + '">' + p.name +
+             '<span class="role">· ' + p.role + '</span></li>';
+    }).join('');
+    sugBox.classList.add('show');
+    sugBox.querySelectorAll('li').forEach(function (li) {
+      li.addEventListener('click', function () {
+        var p = STAFF.find(function (x) { return x.name === li.dataset.name; });
+        if (p) {
+          input.value = p.name;
+          sugBox.classList.remove('show');
+          renderResult(p);
+        }
+      });
+    });
+  }
+
+  input.addEventListener('input', function () {
+    var q = input.value.trim();
+    if (!q) { sugBox.classList.remove('show'); clearResult(); return; }
+    showSuggestions(q);
+    var nq = normalize(q);
+    var exact = STAFF.find(function (p) { return normalize(p.name) === nq; });
+    if (exact) renderResult(exact); else clearResult();
+  });
+
+  input.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter') return;
+    var q = input.value.trim();
+    if (!q) return;
+    var nq = normalize(q);
+    var hit = STAFF.find(function (p) { return normalize(p.name) === nq; }) ||
+              STAFF.find(function (p) { return normalize(p.name).indexOf(nq) !== -1; });
+    sugBox.classList.remove('show');
+    if (hit) { input.value = hit.name; renderResult(hit); }
+    else renderEmpty(q);
+  });
+
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest('.search-wrap')) sugBox.classList.remove('show');
   });
 </script>
 
